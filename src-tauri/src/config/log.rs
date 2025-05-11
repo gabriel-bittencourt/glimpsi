@@ -6,7 +6,7 @@ use tauri::{
 };
 
 use crate::config;
-use crate::config::types::AppFile;
+use crate::types::app_file::AppFile;
 
 
 pub fn setup_logger<R: Runtime>(app: &AppHandle<R>) -> Result<(), fern::InitError> {

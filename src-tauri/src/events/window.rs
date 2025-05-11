@@ -1,3 +1,5 @@
+/// Handles window events
+
 use tauri::{Result, Runtime, WebviewWindow};
 
 
@@ -18,6 +20,6 @@ pub fn hide<R: Runtime>(window: &WebviewWindow<R>) -> Result<()> {
 }
 
 #[tauri::command]
-pub fn restart<R: Runtime>(window: &WebviewWindow<R>) -> Result<()> {
+pub fn reload<R: Runtime>(window: &WebviewWindow<R>) -> Result<()> {
     window.eval("window.location.reload()")
 }

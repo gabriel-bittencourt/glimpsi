@@ -1,5 +1,8 @@
+mod events;
 mod config;
 mod commands;
+mod types;
+mod utils;
 
 use log::{info, error};
 use std::env;
@@ -14,8 +17,11 @@ use tauri_plugin_global_shortcut::{
 };
 use window_vibrancy::apply_acrylic;
 
-use crate::config::types::{AppFile, Settings};
-use shared::types::content::Content;
+use crate::types::{
+    app_file::AppFile,
+    content::FileContent,
+    settings::Settings
+};
 
 
 fn get_main_window<R: Runtime>(app_handle: &impl Manager<R>) -> Result<WebviewWindow<R>> {
@@ -37,9 +43,9 @@ fn handle_menu_events<R: Runtime>(app_handle: &AppHandle<R>, event: MenuEvent) -
     let window = get_main_window(app_handle)?;
 
     match event.id.as_ref() {
-        "show-btn" => commands::window::show(&window),
-        "restart-btn" => commands::window::restart(&window),
-        "quit-btn" => commands::app::quit(app_handle),
+        "show-btn" => events::window::show(&window),
+        "reload-btn" => events::window::reload(&window),
+        "quit-btn" => events::app::quit(app_handle),
         _ => Ok(()),
     }
 }
@@ -52,12 +58,12 @@ fn create_menu<R: Runtime>(app_handle: &AppHandle<R>) -> Result<Menu<R>> {
     let quit_btn = MenuItemBuilder::new("Quit")
         .id("quit-btn")
         .build(app_handle)?;
-    let restart_btn = MenuItemBuilder::new("Restart")
-        .id("restart-btn")
+    let reload_btn = MenuItemBuilder::new("Reload")
+        .id("reload-btn")
         .build(app_handle)?;
 
     Ok(MenuBuilder::new(app_handle)
-        .items(&[&show_btn, &quit_btn, &restart_btn])
+        .items(&[&show_btn, &quit_btn, &reload_btn])
         .build()?)
 }
 
@@ -65,7 +71,7 @@ fn create_menu<R: Runtime>(app_handle: &AppHandle<R>) -> Result<Menu<R>> {
 fn handle_tray_icon_events(event: TrayIconEvent) -> Result<()> {
     match event {
         TrayIconEvent::Enter { .. } => {
-            // TODO: Seek when hovering for over 1 second
+            // TODO: Show window if hovering for over 1 second
             Ok(())
         }
         _ => Ok(()),
@@ -100,15 +106,16 @@ fn handle_seek_shortcut<R: Runtime>(app_handle: &AppHandle<R>, event: ShortcutEv
     let window = get_main_window(app_handle)?;
 
     match event.state() {
-        ShortcutState::Pressed => commands::window::show(&window),
-        ShortcutState::Released => commands::window::hide(&window),
+        ShortcutState::Pressed => events::window::show(&window),
+        ShortcutState::Released => events::window::hide(&window),
     }
 }
 
 #[cfg(desktop)]
 fn setup_global_shortcut<R: Runtime>(app: &App<R>, settings: &Settings) -> Result<()> {
     // Shortcut to show/hide the window
-    let global_shortcut: Shortcut = Shortcut::from(config::mapper::Shortcut(settings.global_shortcut.clone()));
+
+    let global_shortcut: Shortcut = Shortcut::from(settings.global_shortcut.clone());
 
     info!("Global Shortcut: {:?}", &global_shortcut);
 
@@ -158,7 +165,7 @@ pub fn run() {
             setup_logger(app)?;
 
             let settings: Settings = config::file::load_data(app.handle(), AppFile::Settings);
-            let content: Content = config::file::load_data(app.handle(), AppFile::Content);
+            let content: FileContent = config::file::load_data(app.handle(), AppFile::Content);
 
             app.manage(content);
 
@@ -181,7 +188,7 @@ pub fn run() {
             Ok(())
         })
         .plugin(tauri_plugin_opener::init())
-        .invoke_handler(tauri::generate_handler![greet, commands::content::get_content])
+        .invoke_handler(tauri::generate_handler![greet, commands::get_content])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

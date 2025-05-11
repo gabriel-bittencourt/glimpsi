@@ -49,8 +49,7 @@ impl From<Key> for GlobalKey {
             }
         }
 
-        // TODO: handle error
-        GlobalKey::from_str(&key_string).unwrap()
+        GlobalKey::from_str(&key_string).unwrap() // TODO: remove unwrap
     }
 }
 

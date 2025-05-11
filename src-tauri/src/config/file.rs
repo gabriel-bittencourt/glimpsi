@@ -8,7 +8,7 @@ use tauri::{
 };
 
 
-use crate::config::types::AppFile;
+use crate::types::app_file::AppFile;
 
 
 fn create_path_if_not_exists(path: &PathBuf){
