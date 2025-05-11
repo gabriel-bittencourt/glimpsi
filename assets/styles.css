@@ -1,0 +1,96 @@
+body {
+  background: transparent;
+  user-select: none;
+  -webkit-user-select: none; /* Safari */
+  -moz-user-select: none;    /* Firefox */
+  -ms-user-select: none;     /* Internet Explorer/Edge */
+}
+
+.container {
+  margin-left: 1rem;
+  margin-right: 1rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: center;
+}
+
+.grid{
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 2rem;
+}
+
+.column {
+  padding-left: 10px;
+  display: flex;
+  flex-direction: column;
+}
+
+.description {
+  text-align: left;
+}
+
+.application-title {
+  color: rgb(222, 222, 222, 1);
+  padding: 0.25rem 0;
+  margin-top: 0.5rem;
+  margin-bottom: 0.75rem; 
+  border-bottom-width: 1px; 
+  font-size: 1.125rem;
+  line-height: 1.75rem; 
+  font-weight: 500; 
+  border-bottom: 2px solid rgb(222, 222, 222, 0.5);
+}
+
+.application-content {
+  display: contents;
+  margin-top: 1rem; 
+  font-size: 1rem;
+  line-height: 1.5rem;    
+}
+
+.kbd-key {
+  background-color: rgb(229, 231, 235);
+  border: 0.1rem solid rgb(209, 213, 219);
+  border-radius: 0.25rem;
+  padding: 0.1rem 0.15rem;
+  margin-left: 0.40rem;
+  box-shadow: 0 0.25rem 0.1rem rgba(141, 152, 173, 0.6);
+  color: rgb(55, 65, 81);
+  white-space: nowrap; 
+  display: inline-block;
+  vertical-align: middle;
+  font-weight: 500;
+  font-size: 0.875rem;
+  line-height: 1.25rem; 
+  min-width: 1rem;
+  text-align: center;
+}
+
+.kbd-modifier {
+  padding: 0.1rem 0.25rem;
+  min-width: 1rem;
+  text-align: right;
+}
+
+.shortcut-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 1rem;
+  padding-bottom: 1.1rem;
+}
+
+.shortcut-description {
+  flex-shrink: 0;
+  margin-right: 0.5rem;
+  color: rgb(222, 222, 222, 0.9);
+  font-size: 1.175rem;
+  line-height: 1.2rem; 
+}
+
+.shortcut-keys {
+  text-align: right;
+  flex-shrink: 0;
+}
