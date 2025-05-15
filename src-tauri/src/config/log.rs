@@ -14,12 +14,10 @@ pub fn setup_logger<R: Runtime>(app: &AppHandle<R>) -> Result<(), fern::InitErro
     let file = fern::log_file(path)?;
 
     fern::Dispatch::new()
-        .format(|out, message, record| {
+        .format(|out, message, _| {
             out.finish(format_args!(
-                "[{} {} {}] {}",
+                "[{}] {}",
                 Local::now().format("%Y-%m-%d %H:%M:%S"), // Timestamp
-                record.level(),                           // Level
-                record.target(),                          // Module
                 message                                   // Log message
             ))
         })
@@ -27,6 +25,8 @@ pub fn setup_logger<R: Runtime>(app: &AppHandle<R>) -> Result<(), fern::InitErro
         .chain(std::io::stdout()) // remove this for logging to file only
         .chain(file)
         .apply()?;
+
+    // TODO: implement some kind of log rotation
 
     Ok(())
 }

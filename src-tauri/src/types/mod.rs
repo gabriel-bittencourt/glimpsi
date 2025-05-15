@@ -4,3 +4,4 @@ pub mod key;
 pub mod modifier;
 pub mod settings;
 pub mod shortcut;
+pub mod state;

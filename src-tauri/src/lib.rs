@@ -5,11 +5,11 @@ mod types;
 mod utils;
 
 use log::{info, error};
-use std::env;
+use std::sync::Mutex;
 use tauri::{
     menu::{Menu, MenuBuilder, MenuEvent, MenuItemBuilder},
     tray::{TrayIconBuilder, TrayIconEvent},
-    App, AppHandle, Manager, Result, Runtime, WebviewWindow,
+    App, AppHandle, Manager, Result, Runtime, WebviewWindow
 };
 use tauri_plugin_global_shortcut::{
     Builder as GlobalShortcutBuilder, GlobalShortcutExt,
@@ -44,7 +44,7 @@ fn handle_menu_events<R: Runtime>(app_handle: &AppHandle<R>, event: MenuEvent) -
 
     match event.id.as_ref() {
         "show-btn" => events::window::show(&window),
-        "reload-btn" => events::window::reload(&window),
+        "reload-btn" => events::app::reload_content(app_handle, &window),
         "quit-btn" => events::app::quit(app_handle),
         _ => Ok(()),
     }
@@ -83,8 +83,10 @@ fn setup_tray<R: Runtime>(app: &App<R>) -> Result<()> {
     let icon = app.default_window_icon().unwrap().clone();
     let menu = create_menu(app.handle())?;
 
+    let app_name = app.package_info().name.to_owned();
+
     TrayIconBuilder::<R>::new()
-        .tooltip("Glimpsi")
+        .tooltip(app_name)
         .icon(icon)
         .show_menu_on_left_click(true)
         .menu(&menu)
@@ -167,13 +169,22 @@ pub fn run() {
             let settings: Settings = config::file::load_data(app.handle(), AppFile::Settings);
             let content: FileContent = config::file::load_data(app.handle(), AppFile::Content);
 
-            app.manage(content);
+            let state = types::state::AppState {
+                content: Mutex::new(content),
+            };
+
+            app.manage(state);
 
             // Setup shortcut to show main window
             setup_global_shortcut(app, &settings)?;
 
             // Setup tray icon and menu
             setup_tray(app)?;
+
+            /*  TODO: 
+              - Make window size configurable (and make them autocalculate at runtime)
+              - Make window position configurable
+            */
 
             // Setup window transparency effect (Windows only)
             #[cfg(target_os = "windows")]
