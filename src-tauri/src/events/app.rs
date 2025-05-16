@@ -1,4 +1,6 @@
+use log::error;
 use tauri::{AppHandle, Manager, Result, Runtime, WebviewWindow};
+use tauri_plugin_opener::OpenerExt;
 
 use crate::types::{
     app_file::AppFile,
@@ -24,4 +26,22 @@ pub fn reload_content<R: Runtime>(app: &AppHandle<R>, window: &WebviewWindow<R>)
     }
 
     window::reload(window)
+}
+
+pub fn open_config_folder<R: Runtime>(app: &AppHandle<R>) -> Result<()> {
+    let path = match file::get_config_path(app) {
+        Ok(path) => path,
+        Err(e) => {
+            error!("Error getting config path: {}", e);
+            return Err(e);
+        }
+    };
+
+    match app.opener().open_path(path.to_string_lossy(), None::<&str>) {
+        Ok(_) => Ok(()),
+        Err(e) => {
+            error!("Error opening config folder: {}", e);
+            Ok(())
+        }
+    }
 }

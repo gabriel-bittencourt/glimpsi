@@ -46,6 +46,7 @@ fn handle_menu_events<R: Runtime>(app_handle: &AppHandle<R>, event: MenuEvent) -
         "show-btn" => events::window::show(&window),
         "reload-btn" => events::app::reload_content(app_handle, &window),
         "quit-btn" => events::app::quit(app_handle),
+        "open-folder-btn" => events::app::open_config_folder(app_handle),
         _ => Ok(()),
     }
 }
@@ -55,15 +56,18 @@ fn create_menu<R: Runtime>(app_handle: &AppHandle<R>) -> Result<Menu<R>> {
     let show_btn = MenuItemBuilder::new("Show")
         .id("show-btn")
         .build(app_handle)?;
-    let quit_btn = MenuItemBuilder::new("Quit")
-        .id("quit-btn")
-        .build(app_handle)?;
     let reload_btn = MenuItemBuilder::new("Reload")
         .id("reload-btn")
         .build(app_handle)?;
+    let open_folder_btn = MenuItemBuilder::new("Open program folder")
+        .id("open-folder-btn")
+        .build(app_handle)?;
+    let quit_btn = MenuItemBuilder::new("Quit")
+        .id("quit-btn")
+        .build(app_handle)?;
 
     Ok(MenuBuilder::new(app_handle)
-        .items(&[&show_btn, &quit_btn, &reload_btn])
+        .items(&[&show_btn, &reload_btn, &open_folder_btn, &quit_btn])
         .build()?)
 }
 

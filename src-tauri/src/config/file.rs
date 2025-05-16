@@ -4,7 +4,7 @@ use std::path::PathBuf;
 use log::warn;
 use serde::{Serialize, de::DeserializeOwned};
 use tauri::{
-    AppHandle, Manager, Runtime
+    AppHandle, Error as TauriError, Manager, Runtime
 };
 
 
@@ -18,7 +18,7 @@ fn create_path_if_not_exists(path: &PathBuf){
     }
 }
 
-pub fn get_config_path<R: Runtime>(app: &AppHandle<R>) -> Result<PathBuf, Box<dyn Error>> {
+pub fn get_config_path<R: Runtime>(app: &AppHandle<R>) -> Result<PathBuf, TauriError> {
     let path = app.path().app_config_dir()?;
     create_path_if_not_exists(&path);
 
